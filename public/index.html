@@ -22,6 +22,21 @@
             --glass: blur(10px);
             --radius: 22px;
         }
+        /* Prevent sideways overflow on mobile */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Make sure carousel never forces the page wider */
+        .skills-carousel,
+        .skills-track,
+        .skills-slide,
+        .tool-card,
+        .card {
+            max-width: 100%;
+        }
+
 
         @media (prefers-color-scheme: dark){
             :root{
@@ -476,6 +491,42 @@
         }
 
         .skills-btn svg{ width:18px; height:18px; }
+
+        .skills-track { gap: 0; }          /* remove gap */
+        .skills-slide { padding-right: 14px; }  /* keep spacing via padding */
+
+
+        /* --- Fix contact overflow on small screens --- */
+        .contact-item{
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .contact-item b{
+            flex: 0 0 auto;          /* keep label size */
+            white-space: nowrap;     /* don't break "Portfolio / Website" */
+        }
+
+        .contact-item a{
+            flex: 1 1 auto;          /* allow link to shrink */
+            min-width: 0;            /* IMPORTANT: lets flex item shrink */
+            text-align: right;
+            overflow-wrap: anywhere; /* break long emails/links */
+            word-break: break-word;
+        }
+
+        /* Extra safety for very small screens */
+        @media (max-width: 360px){
+            .contact-item{
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .contact-item a{
+                text-align: left;
+            }
+        }
+
     </style>
 </head>
 
@@ -519,13 +570,12 @@
 
             <div class="cta">
                 <a href="#tools" class="btn btn-soft focus-ring">View Tools</a>
-                <a href="#skills" class="btn btn-ghost focus-ring">Skills & Expertise</a>
+                <a href="#skills" class="btn btn-ghost focus-ring">Skills SSS& Expertise</a>
                 <a href="#contact" class="btn btn-primary focus-ring">Hire Me</a>
             </div>
         </div>
 
         <!-- PROFILE CARD -->
-        <aside class="card">
             <div class="profile">
                 <div class="avatar" aria-label="Profile photo">
                     <!-- Put your image in: public/images/gevanes.png -->
