@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HMP Portfolio</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+
+    <style>
+        :root{
+            --mint: #8FE3D1;       /* accent */
+            --pistachio: #B2D3C2;  /* surface */
+            --bg: #ffffff;
+            --ink: #0f172a;
+            --muted: #475569;
+            --line: rgba(15, 23, 42, .12);
+            --card: rgba(255,255,255,.72);
+            --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+            --glass: blur(10px);
+            --radius: 22px;
+        }
+
+        @media (prefers-color-scheme: dark){
+            :root{
+                --bg: #0a0a0a;
+                --ink: #e5e7eb;
+                --muted: rgba(229,231,235,.74);
+                --line: rgba(255,255,255,.14);
+                --card: rgba(20,20,20,.72);
+                --shadow: 0 14px 40px rgba(0, 0, 0, .35);
+            }
+        }
+
+        *{ box-sizing:border-box; }
+        html, body { height: 100%; }
+        body{
+            margin: 0;
+            font-family: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.55;
+        }
+
+        a{ color: inherit; text-decoration: none; }
+        a:hover{ opacity: .92; }
+        .muted{ color: var(--muted); }
+
+        /* Background */
+        .bg{
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .blob{
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(52px);
+            opacity: .55;
+            transform: translateZ(0);
+        }
+        .blob.one{
+            top: -120px; left: -120px;
+            width: 380px; height: 380px;
+            background: var(--pistachio);
+        }
+        .blob.two{
+            top: 240px; right: -150px;
+            width: 460px; height: 460px;
+            background: var(--mint);
+        }
+        .radial{
+            position:absolute;
+            inset:0;
+            background:
+                radial-gradient(850px circle at 20% 10%, rgba(178, 211, 194, .26), transparent 58%),
+                radial-gradient(950px circle at 85% 30%, rgba(143, 227, 209, .20), transparent 62%);
+        }
+
+        /* Layout */
+        .container{
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 44px 20px 72px;
+        }
+
+        /* Topbar */
+        .topbar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap: 14px;
+        }
+        .brand{
+            display:inline-flex;
+            align-items:center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            box-shadow: 0 1px 0 rgba(255,255,255,.2) inset;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: .2px;
+        }
+        .dot{
+            width: 10px; height: 10px;
+            border-radius: 999px;
+            background: var(--mint);
+            box-shadow: 0 0 0 3px rgba(143,227,209,.22);
+        }
+
+        .nav{
+            display:none;
+            gap: 22px;
+            font-size: 14px;
+        }
+        .nav a{ color: var(--muted); font-weight: 600; }
+        .nav a:hover{ color: var(--ink); opacity: 1; }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-weight: 800;
+            font-size: 14px;
+            transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+            user-select:none;
+        }
+        .btn:active{ transform: translateY(1px); }
+        .btn-primary{
+            background: var(--mint);
+            color: #0b1220;
+        }
+        .btn-soft{
+            background: rgba(178,211,194,.42);
+            border-color: var(--line);
+        }
+        .btn-ghost{
+            background: var(--card);
+            border-color: var(--line);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+        }
+        .focus-ring:focus-visible{
+            outline: none;
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 35%, transparent);
+        }
+
+        /* Hero */
+        .hero{
+            margin-top: 38px;
+            display:grid;
+            gap: 18px;
+        }
+        .pill{
+            display:inline-flex;
+            align-items:center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(178,211,194,.26);
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .h1{
+            margin: 10px 0 0;
+            font-size: 42px;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            font-weight: 800;
+        }
+        .accent{
+            color: color-mix(in srgb, var(--mint) 60%, var(--ink));
+        }
+        .lead{
+            margin: 14px 0 0;
+            max-width: 60ch;
+            font-size: 16px;
+            color: var(--muted);
+        }
+        .cta{
+            margin-top: 18px;
+            display:flex;
+            flex-wrap:wrap;
+            gap: 10px;
+        }
+
+        /* Cards */
+        .card{
+            border: 1px solid var(--line);
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+        }
+        .grid-2{ display:grid; gap: 14px; }
+        .mini{
+            border-radius: 18px;
+            padding: 14px;
+            border: 1px solid var(--line);
+        }
+        .mini.soft-a{ background: rgba(178,211,194,.22); }
+        .mini.soft-b{ background: rgba(143,227,209,.18); }
+        .mini.soft-c{ background: rgba(255,255,255,.60); }
+        @media (prefers-color-scheme: dark){
+            .mini.soft-c{ background: rgba(20,20,20,.55); }
+        }
+        .label{ margin:0; font-size: 13px; font-weight: 900; }
+        .small{ margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+        /* Profile */
+        .profile{
+            display:flex;
+            gap: 14px;
+            align-items:center;
+        }
+        .avatar{
+            width: 120px; height: 120px;
+            border-radius: 18px;
+            border: 1px solid var(--line);
+            background: rgba(178,211,194,.28);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight: 900;
+            letter-spacing: .5px;
+            overflow:hidden;
+        }
+        .avatar img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 18px;
+            display:block;
+        }
+        .name{ font-size: 16px; font-weight: 900; margin:0; }
+        .role{ margin: 3px 0 0; font-size: 13px; color: var(--muted); font-weight: 700; }
+
+        /* Section */
+        .section{ margin-top: 52px; }
+        .section h2{
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: -0.01em;
+            font-weight: 900;
+        }
+        .section-head{
+            display:flex;
+            align-items:flex-end;
+            justify-content:space-between;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .section-note{
+            margin:0;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        /* Chips */
+        .chips{
+            margin-top: 12px;
+            display:flex;
+            flex-wrap:wrap;
+            gap: 8px;
+        }
+        .chip{
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.55);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        @media (prefers-color-scheme: dark){
+            .chip{ background: rgba(20,20,20,.55); }
+        }
+
+        /* Lists */
+        .list{
+            margin: 12px 0 0;
+            padding: 0;
+            list-style: none;
+            display:grid;
+            gap: 8px;
+        }
+        .li{
+            display:flex;
+            align-items:flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(255,255,255,.55);
+        }
+        @media (prefers-color-scheme: dark){
+            .li{ background: rgba(20,20,20,.55); }
+        }
+        .bullet{
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--mint);
+            margin-top: 5px;
+            flex: 0 0 auto;
+        }
+        .li strong{ font-weight: 900; }
+        .li span{ color: var(--muted); font-weight: 600; }
+
+        /* Tool grid */
+        .tool-grid{
+            display:grid;
+            gap: 14px;
+        }
+        .tool-card{
+            border: 1px solid var(--line);
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+        }
+        .tool-title{
+            margin: 0;
+            font-size: 14px;
+            font-weight: 1000;
+            letter-spacing: .2px;
+        }
+        .tool-sub{
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        /* Contact */
+        .contact-grid{
+            display:grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .contact-item{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--line);
+            background: rgba(178,211,194,.18);
+        }
+        .contact-item b{ font-weight: 900; }
+        .contact-item a{
+            font-weight: 900;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .footer{
+            margin-top: 18px;
+            text-align:center;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (min-width: 860px){
+            .nav{ display:flex; }
+            .hero{
+                grid-template-columns: 1.15fr .85fr;
+                align-items: center;
+                gap: 22px;
+                margin-top: 46px;
+            }
+            .grid-2{ grid-template-columns: 1fr 1fr; }
+            .tool-grid{ grid-template-columns: 1fr 1fr; }
+            .h1{ font-size: 56px; }
+        }
+    </style>
+
+    <!-- Carousel-specific CSS -->
+    <style>
+        .skills-slide{
+            scroll-snap-align: start;
+            flex: 0 0 100%;
+            min-width: 100%;
+        }
+        .skills-carousel{
+            position: relative;
+            margin-top: 14px;
+        }
+
+        .skills-track{
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 2px 2px 14px;
+            scrollbar-width: none;
+        }
+        .skills-track::-webkit-scrollbar{ display:none; }
+
+        .skills-nav{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skills-arrows{
+            display:flex;
+            gap: 8px;
+            align-items:center;
+        }
+
+        .skills-btn{
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            transition: transform .12s ease, opacity .12s ease;
+            user-select:none;
+        }
+        .skills-btn:active{ transform: translateY(1px); }
+        .skills-btn[disabled]{ opacity:.45; cursor:not-allowed; }
+
+        .skills-dots{
+            display:flex;
+            gap: 8px;
+            align-items:center;
+            justify-content:center;
+            flex: 1;
+        }
+
+        .skills-dot{
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: transparent;
+            cursor:pointer;
+            padding:0;
+        }
+        .skills-dot.is-active{
+            background: var(--mint);
+            box-shadow: 0 0 0 3px rgba(143,227,209,.18);
+            border-color: transparent;
+        }
+
+        .skills-btn svg{ width:18px; height:18px; }
+    </style>
+</head>
+
+<body>
+<div class="bg" aria-hidden="true">
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="radial"></div>
+</div>
+
+<div class="container">
+    <header class="topbar">
+        <a href="#" class="brand">
+            <span class="dot"></span>
+            HMP
+        </a>
+
+        <nav class="nav">
+            <a href="#skills">Skills</a>
+            <a href="#tools">Tools</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <a href="#contact" class="btn btn-primary focus-ring">Let’s talk</a>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div>
+            <span class="pill"><span class="dot"></span> SAY HELLO TO STRESS-FREE PRODUCTIVITY</span>
+
+            <h1 class="h1">
+                Executive Virtual Assistant/Social Media Marketing
+                <span class="accent"> + Web Developer</span>
+            </h1>
+
+            <p class="lead">
+                I help founders and small teams stay organized, communicate clearly, and ship work faster —
+                from email + calendar management to website development, graphics, and workflow systems.
+            </p>
+
+            <div class="cta">
+                <a href="#tools" class="btn btn-soft focus-ring">View Tools</a>
+                <a href="#skills" class="btn btn-ghost focus-ring">Skills & Expertise</a>
+                <a href="#contact" class="btn btn-primary focus-ring">Hire Me</a>
+            </div>
+        </div>
+
+        <!-- PROFILE CARD -->
+        <aside class="card">
+            <div class="profile">
+                <div class="avatar" aria-label="Profile photo">
+                    <!-- Put your image in: public/images/gevanes.png -->
+                    <img src="/images/gevanes.png" alt="Gevanes">
+                </div>
+
+                <div>
+                    <p class="name">BANiBANSS</p>
+                    <p class="role">Executive Virtual Assistant</p>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:14px;">
+                <div class="mini soft-a">
+                    <p class="label">Core strengths</p>
+                    <p class="small">Organization, communication, clean execution</p>
+                </div>
+
+                <div class="mini soft-b">
+                    <p class="label">Specialty</p>
+                    <p class="small">Admin Workflows + Graphics + Video/Photo Editing + Building Websites</p>
+                </div>
+
+                <div class="mini soft-c" style="grid-column: 1 / -1;">
+                    <p class="label">Featured site</p>
+                    <a href="https://yukoninspirations.com/" target="_blank" rel="noreferrer"
+                       class="small" style="font-weight: 900; text-decoration: underline; text-underline-offset: 4px;">
+                        yukoninspirations.com
+                    </a>
+                    <p class="small" style="margin-top:10px;">
+                        Photography website with email integration and a clean, modern layout.
+                    </p>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="section">
+        <div class="section-head">
+            <h2>Skills & Expertise</h2>
+            <p class="section-note">Swipe / scroll to view all skill categories.</p>
+        </div>
+
+        <div class="skills-carousel" id="skillsCarousel">
+            <div class="skills-track" id="skillsTrack" aria-label="Skills carousel">
+
+                <!-- Slide 1 -->
+                <div class="skills-slide">
+                    <div class="tool-card" style="background: rgba(178,211,194,.18);">
+                        <p class="tool-title">Virtual Assistant Support</p>
+                        <p class="tool-sub">Daily operations + admin support.</p>
+
+                        <div class="chips">
+                            <span class="chip">Research Assistance</span>
+                            <span class="chip">Data Entry</span>
+                            <span class="chip">Data Organization</span>
+                            <span class="chip">Email Management</span>
+                            <span class="chip">Calendar Management</span>
+                            <span class="chip">Project Management</span>
+                            <span class="chip">CRM Support</span>
+                        </div>
+
+                        <ul class="list">
+                            <li class="li"><span class="bullet"></span><div><strong>Research Assistance</strong><br><span>Online research, summaries, competitor checks, and notes</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Data Entry & Organization</strong><br><span>Spreadsheets, file organization, clean databases, documentation</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Email Management</strong><br><span>Inbox clean-up, labeling, draft replies, follow-ups, tracking</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Calendar Management</strong><br><span>Scheduling, reminders, meeting prep, time-blocking</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Project Management</strong><br><span>Task tracking, status updates, SOPs, team coordination</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>CRM Support</strong><br><span>Lead tracking, pipeline updates, follow-ups, reporting</span></div></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="skills-slide">
+                    <div class="tool-card">
+                        <p class="tool-title">Website Development</p>
+                        <p class="tool-sub">What I can build and maintain.</p>
+
+                        <div class="chips">
+                            <span class="chip">Laravel</span>
+                            <span class="chip">PHP</span>
+                            <span class="chip">HTML</span>
+                            <span class="chip">CSS</span>
+                            <span class="chip">JavaScript</span>
+                            <span class="chip">Bootstrap</span>
+                            <span class="chip">WordPress</span>
+                            <span class="chip">Shopify</span>
+                            <span class="chip">Systeme.io</span>
+                            <span class="chip">Hosting & Domains</span>
+                        </div>
+
+                        <ul class="list">
+                            <li class="li"><span class="bullet"></span><div><strong>Laravel / PHP</strong><br><span>CRUD apps, admin dashboards, authentication, forms, databases</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>WordPress</strong><br><span>Site edits, theme customization, page building, plugins</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Shopify</strong><br><span>Store setup, product pages, content updates, basic theme edits</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Funnels / Landing Pages</strong><br><span>Systeme.io pages, lead capture forms, simple automation setup</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Hosting & Deployment</strong><br><span>Domains, DNS, hosting setup (Hostinger/Bluehost/GoDaddy/SiteGround)</span></div></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="skills-slide">
+                    <div class="tool-card" style="background: rgba(143,227,209,.14);">
+                        <p class="tool-title">Creative & Marketing Support</p>
+                        <p class="tool-sub">Graphics, photo edits, video edits, and growth basics.</p>
+
+                        <div class="chips">
+                            <span class="chip">Graphics (Canva / Figma)</span>
+                            <span class="chip">Photo Editing</span>
+                            <span class="chip">Video Editing (CapCut)</span>
+                            <span class="chip">Social Media Management</span>
+                            <span class="chip">Content Scheduling</span>
+                            <span class="chip">SEO (Basic)</span>
+                        </div>
+
+                        <ul class="list">
+                            <li class="li"><span class="bullet"></span><div><strong>Graphics Design</strong><br><span>Social posts, banners, promos, thumbnails, brand-aligned templates</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Photo Editing</strong><br><span>Basic retouching, cleanups, resizing, product/portfolio-ready edits</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Video Editing</strong><br><span>Reels/TikTok edits, captions, cuts, transitions, simple motion templates</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>Social Media Management</strong><br><span>Post scheduling, captions/hashtags, content organization, basic reporting</span></div></li>
+                            <li class="li"><span class="bullet"></span><div><strong>SEO Support</strong><br><span>On-page basics: headings, meta titles/descriptions, internal linking</span></div></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Controls -->
+            <div class="skills-nav" aria-label="Skills carousel controls">
+                <div class="skills-arrows">
+                    <button class="skills-btn focus-ring" id="skillsPrev" type="button" aria-label="Previous">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 18l-6-6 6-6"/>
+                        </svg>
+                    </button>
+                    <button class="skills-btn focus-ring" id="skillsNext" type="button" aria-label="Next">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="skills-dots" id="skillsDots" aria-label="Slide dots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="tools" class="section">
+        <div class="section-head">
+            <h2>Tools I’ve Already Used</h2>
+        </div>
+
+        <div class="tool-grid">
+            <div class="tool-card">
+                <p class="tool-title">Graphics & Video</p>
+                <p class="tool-sub">Design, content assets, and editing.</p>
+                <div class="chips">
+                    <span class="chip">Canva</span>
+                    <span class="chip">Figma</span>
+                    <span class="chip">CapCut</span>
+                </div>
+            </div>
+
+            <div class="tool-card" style="background: rgba(143,227,209,.14);">
+                <p class="tool-title">Web + Hosting / Domains</p>
+                <p class="tool-sub">Setup, DNS, and deployment environments.</p>
+                <div class="chips">
+                    <span class="chip">Bluehost</span>
+                    <span class="chip">Hostinger</span>
+                    <span class="chip">GoDaddy</span>
+                    <span class="chip">SiteGround</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <p class="tool-title">E-commerce / CMS / Funnels</p>
+                <p class="tool-sub">Stores, sites, and funnel platforms.</p>
+                <div class="chips">
+                    <span class="chip">Shopify</span>
+                    <span class="chip">WordPress</span>
+                    <span class="chip">Systeme.io</span>
+                    <span class="chip">Pixieset</span>
+                    <span class="chip">Bootstrap</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <p class="tool-title">Communication</p>
+                <p class="tool-sub">Fast collaboration and updates.</p>
+                <div class="chips">
+                    <span class="chip">Slack</span>
+                    <span class="chip">WhatsApp</span>
+                    <span class="chip">Trello</span>
+                    <span class="chip">Dropbox</span>
+                </div>
+            </div>
+
+            <div class="tool-card" style="background: rgba(178,211,194,.18);">
+                <p class="tool-title">Project Management</p>
+                <p class="tool-sub">Planning, tasks, and team tracking.</p>
+                <div class="chips">
+                    <span class="chip">ClickUp</span>
+                    <span class="chip">Asana</span>
+                    <span class="chip">Monday.com</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <p class="tool-title">CRM / Tracking / Sales Ops</p>
+                <p class="tool-sub">Pipelines, time tracking, and systems.</p>
+                <div class="chips">
+                    <span class="chip">Close.io</span>
+                    <span class="chip">GoHighLevel</span>
+                    <span class="chip">Hubstaff</span>
+                    <span class="chip">Clockify</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <p class="tool-title">Other Platforms</p>
+                <p class="tool-sub">Experience with learning and marketplaces.</p>
+                <div class="chips">
+                    <span class="chip">Meta Blueprint</span>
+                    <span class="chip">Amazon</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+        <div class="card">
+            <div class="section-head" style="margin-bottom: 10px;">
+                <h2>Contact</h2>
+                <p class="section-note">Fastest ways to reach me.</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <b>Email</b>
+                    <a class="focus-ring" href="mailto:berdongevanes@gmail.com">berdongevanes@gmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <b>Portfolio / Website</b>
+                    <a class="focus-ring" href="#" target="_blank" rel="noreferrer">kyutsiJejy.com</a>
+                </div>
+                <div class="contact-item">
+                    <b>LinkedIn</b>
+                    <a class="focus-ring" href="#" target="_blank" rel="noreferrer">linkedin.com/in/kyutsiJejy</a>
+                </div>
+            </div>
+
+            <div class="cta" style="margin-top: 14px;">
+                <a class="btn btn-primary focus-ring" href="mailto:berdongevanes@gmail.com">Email me</a>
+                <a class="btn btn-soft focus-ring" href="#tools">See tools</a>
+                <a class="btn btn-ghost focus-ring" href="#skills">See skills</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 HMP. Built with Laravel.
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        const track = document.getElementById('skillsTrack');
+        const prevBtn = document.getElementById('skillsPrev');
+        const nextBtn = document.getElementById('skillsNext');
+        const dotsWrap = document.getElementById('skillsDots');
+
+        if (!track || !prevBtn || !nextBtn || !dotsWrap) return;
+
+        const slides = Array.from(track.querySelectorAll('.skills-slide'));
+
+        // Create dots
+        const dots = slides.map((_, i) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'skills-dot' + (i === 0 ? ' is-active' : '');
+            b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            b.addEventListener('click', () => scrollToIndex(i));
+            dotsWrap.appendChild(b);
+            return b;
+        });
+
+        function slideStep() {
+            const first = slides[0];
+            const rect = first.getBoundingClientRect();
+            return Math.max(1, Math.round(rect.width + 14)); // include gap
+        }
+
+        function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+        function currentIndex() {
+            const step = slideStep();
+            const idx = Math.round(track.scrollLeft / step);
+            return clamp(idx, 0, slides.length - 1);
+        }
+
+        function setActiveDot(idx) {
+            dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+        }
+
+        function updateButtons() {
+            const idx = currentIndex();
+            prevBtn.disabled = idx === 0;
+            nextBtn.disabled = idx === slides.length - 1;
+            setActiveDot(idx);
+        }
+
+        function scrollToIndex(idx) {
+            const step = slideStep();
+            track.scrollTo({ left: idx * step, behavior: 'smooth' });
+        }
+
+        prevBtn.addEventListener('click', () => scrollToIndex(currentIndex() - 1));
+        nextBtn.addEventListener('click', () => scrollToIndex(currentIndex() + 1));
+
+        track.addEventListener('scroll', () => {
+            window.clearTimeout(track._t);
+            track._t = window.setTimeout(updateButtons, 60);
+        });
+
+        window.addEventListener('resize', () => {
+            updateButtons();
+        });
+
+        updateButtons();
+
+        /* AUTO-SCROLL */
+        const AUTO_MS = 3000;
+        let autoTimer = null;
+
+        function startAuto() {
+            stopAuto();
+            autoTimer = window.setInterval(() => {
+                const idx = currentIndex();
+                const next = (idx + 1) % slides.length; // loop back to first
+                scrollToIndex(next);
+            }, AUTO_MS);
+        }
+
+        function stopAuto() {
+            if (autoTimer) {
+                window.clearInterval(autoTimer);
+                autoTimer = null;
+            }
+        }
+
+        // Pause on hover / touch / focus
+        track.addEventListener('mouseenter', stopAuto);
+        track.addEventListener('mouseleave', startAuto);
+
+        track.addEventListener('touchstart', stopAuto, { passive: true });
+        track.addEventListener('touchend', startAuto, { passive: true });
+
+        prevBtn.addEventListener('click', () => { stopAuto(); startAuto(); });
+        nextBtn.addEventListener('click', () => { stopAuto(); startAuto(); });
+        dots.forEach(d => d.addEventListener('click', () => { stopAuto(); startAuto(); }));
+
+        // Respect reduced motion
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            startAuto();
+        }
+    })();
+</script>
+</body>
+</html>
