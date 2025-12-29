@@ -409,32 +409,96 @@
             .tool-grid{ grid-template-columns: 1fr 1fr; }
             .h1{ font-size: 56px; }
         }
+
+
+
+        /* --- Fix contact overflow on small screens --- */
+        .contact-item{
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .contact-item b{
+            flex: 0 0 auto;          /* keep label size */
+            white-space: nowrap;     /* don't break "Portfolio / Website" */
+        }
+
+        .contact-item a{
+            flex: 1 1 auto;          /* allow link to shrink */
+            min-width: 0;            /* IMPORTANT: lets flex item shrink */
+            text-align: right;
+            overflow-wrap: anywhere; /* break long emails/links */
+            word-break: break-word;
+        }
+
+        /* Extra safety for very small screens */
+        @media (max-width: 360px){
+            .contact-item{
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .contact-item a{
+                text-align: left;
+            }
+        }
+
     </style>
 
     <!-- Carousel-specific CSS -->
+
+
     <style>
-        .skills-slide{
-            scroll-snap-align: start;
-            flex: 0 0 100%;
-            min-width: 100%;
-        }
+        /* ===== Carousel-specific CSS (NO PEEK / NO OVERFLOW LOOK) ===== */
+
         .skills-carousel{
             position: relative;
             margin-top: 14px;
+
+            /* KEY: hide the sideways "peek" area */
+            overflow: hidden;
+
+            /* optional: matches your soft rounding vibe */
+            border-radius: var(--radius);
         }
 
+        /* Track (scroll container) */
         .skills-track{
             display: flex;
-            gap: 14px;
             overflow-x: auto;
+            overflow-y: hidden;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            padding: 2px 2px 14px;
+
+            /* Make sure track never exceeds container */
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+
+            /* Remove any layout widening effects */
+            padding: 2px 0 14px;
+            margin: 0;
+            gap: 0;
+
+            /* Hide scrollbar */
             scrollbar-width: none;
         }
         .skills-track::-webkit-scrollbar{ display:none; }
 
+        /* Slide = exactly the viewport width */
+        .skills-slide{
+            flex: 0 0 100%;
+            min-width: 100%;
+            max-width: 100%;
+            scroll-snap-align: start;
+            box-sizing: border-box;
+
+            /* spacing inside slide (doesn't increase width) */
+            padding: 0 8px;
+        }
+
+        /* Controls */
         .skills-nav{
             display:flex;
             align-items:center;
@@ -492,43 +556,47 @@
 
         .skills-btn svg{ width:18px; height:18px; }
 
-        .skills-track { gap: 0; }          /* remove gap */
-        .skills-slide { padding-right: 14px; }  /* keep spacing via padding */
+        /* ===== Carousel overflow FIX (caused by .li flex items) ===== */
 
+        /* Ensure the carousel is clipped */
+        .skills-carousel { overflow: hidden; }
 
-        /* --- Fix contact overflow on small screens --- */
-        .contact-item{
+        /* Keep track from widening the page */
+        .skills-track { width: 100%; max-width: 100%; }
+
+        /* Slide must never exceed container */
+        .skills-slide { max-width: 100%; }
+
+        /* The REAL fix: flex children must be allowed to shrink */
+        .skills-slide .li{
             width: 100%;
             max-width: 100%;
+            overflow: hidden;     /* prevents inner content from pushing width */
         }
 
-        .contact-item b{
-            flex: 0 0 auto;          /* keep label size */
-            white-space: nowrap;     /* don't break "Portfolio / Website" */
+        /* Bullet stays fixed; content can shrink */
+        .skills-slide .li .bullet{
+            flex: 0 0 auto;
         }
 
-        .contact-item a{
-            flex: 1 1 auto;          /* allow link to shrink */
-            min-width: 0;            /* IMPORTANT: lets flex item shrink */
-            text-align: right;
-            overflow-wrap: anywhere; /* break long emails/links */
+        /* The text container inside .li MUST be shrinkable */
+        .skills-slide .li > div{
+            flex: 1 1 auto;
+            min-width: 0;         /* IMPORTANT */
+        }
+
+        /* Long text must wrap instead of widening the row */
+        .skills-slide .li span,
+        .skills-slide .li strong{
+            overflow-wrap: anywhere;
             word-break: break-word;
-        }
-
-        /* Extra safety for very small screens */
-        @media (max-width: 360px){
-            .contact-item{
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-            .contact-item a{
-                text-align: left;
-            }
         }
 
     </style>
 </head>
+
+
+
 
 <body>
 <div class="bg" aria-hidden="true">
@@ -870,8 +938,7 @@
         function slideStep() {
             const first = slides[0];
             const rect = first.getBoundingClientRect();
-            return Math.max(1, Math.round(rect.width + 14)); // include gap
-        }
+            return Math.max(1, Math.round(rect.width));        }
 
         function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
